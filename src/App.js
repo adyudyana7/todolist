@@ -3,6 +3,7 @@ import AddTodo from "./components/AddTodo";
 import Todos from "./components/Todos";
 import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
+import { Toaster, toast } from "sonner";
 
 function App() {
   const [todo, setTodo] = useState("");
@@ -15,17 +16,21 @@ function App() {
   };
 
   const handleAdd = () => {
-    setTodos((prevState) => {
-      const newTodo = {
-        name: todo,
-        id: uuidv4(),
-        isDone: false,
-      };
+    if (todo === "") {
+      toast.error(" Нельзя добавить пустое задание");
+    } else {
+      setTodos((prevState) => {
+        const newTodo = {
+          name: todo,
+          id: uuidv4(),
+          isDone: false,
+        };
+        return [newTodo, ...prevState];
+      });
 
-      return [newTodo, ...prevState];
-    });
-
-    setTodo("");
+      setTodo("");
+      toast.success(" успешно добавлено!");
+    }
   };
 
   const handleChangeDone = (event, id) => {
@@ -38,37 +43,51 @@ function App() {
     };
 
     setTodos([...filterTodos, newTodo]);
+    if (event.target.checked) {
+      toast.success("Задача успешно выполнена");
+    } else {
+      toast.warning("Вы не выполнили задачу!");
+    }
   };
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        height: "100vh",
-        rowGap: "20px",
-      }}
-    >
-      <Box sx={{ display: "flex", justifyContent: "center" }}>
-        <AddTodo
-          todo={todo}
-          handleChange={handleChange}
-          handleAdd={handleAdd}
-        />
-      </Box>
+    <Box sx={{ background: "#e0e0e0" }}>
+      <Toaster position="top-center" richColors />
 
-      <Box sx={{ display: "flex", justifyContent: "space-around" }}>
-        <Todos
-          title="Todos"
-          todos={todos.filter((item) => item.isDone === false)}
-          handleChange={handleChangeDone}
-        />
-        <Todos
-          handleChange={handleChangeDone}
-          title="Done Todos"
-          todos={todos.filter((item) => item.isDone === true)}
-        />
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          height: "100vh",
+          rowGap: "20px",
+          paddingTop: "30px",
+        }}
+      >
+        <Box sx={{ display: "flex", justifyContent: "center" }}>
+          <AddTodo
+            todo={todo}
+            handleChange={handleChange}
+            handleAdd={handleAdd}
+          />
+        </Box>
+
+        <Box sx={{ display: "flex", justifyContent: "space-around" }}>
+          <Box>
+            <Todos
+              title="ЗАДАЧИ:"
+              todos={todos.filter((item) => item.isDone === false)}
+              handleChange={handleChangeDone}
+            />
+          </Box>
+
+          <Todos
+            handleChange={handleChangeDone}
+            title="СДЕЛАННЫЕ ЗАДАЧИ:"
+            todos={todos.filter((item) => item.isDone === true)}
+          />
+        </Box>
       </Box>
+      <Toaster richColors />
     </Box>
   );
 }
