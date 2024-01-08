@@ -1,53 +1,57 @@
-import { IconButton, InputAdornment, TextField, Box } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
-import { toast } from "sonner";
+import { TextField, Box, Button } from "@mui/material";
+import { DateTimePicker } from "@mui/x-date-pickers";
+import { MenuItem } from "@mui/material";
 
-const AddTodo = ({ todo, handleChange, handleAdd }) => {
-  const popik = (message) => {
-    toast.success(message, {
-      position: "top-left",
-      autoClose: 3000,
-      hideProgressBar: true,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-    });
-  };
+const categories = [
+  "Работа:",
+  "Быт:",
+  "Хобби:",
+  "Финансы",
+  "Здоровье",
+  "Личное",
+  "Здоровье",
+];
 
+const AddTodo = ({
+  todo,
+  date,
+  handleChange,
+  handleAdd,
+  handleDateChange,
+  category,
+  handleCategoryChange,
+}) => {
   return (
-    <Box>
+    <Box sx={{ display: "flex", flexDirection: "column", rowGap: "10px" }}>
       <TextField
         sx={{ width: "400px" }}
         name="todo"
-        onKeyDown={(event) => {
-          if (event.key === "Enter") {
-            handleAdd();
-          }
-        }}
         label="Задача"
         placeholder="Введите задачу"
         value={todo}
         onChange={handleChange}
-        InputProps={{
-          endAdornment: (
-            <InputAdornment position="end">
-              <IconButton
-                onClick={() => {
-                  if (todo.trim() !== "") {
-                    handleAdd();
-                    popik("Успешно добавлено!");
-                  } else {
-                    popik("Введите задачу...");
-                  }
-                }}
-                disabled={!todo.trim()}
-              >
-                <AddIcon />
-              </IconButton>
-            </InputAdornment>
-          ),
-        }}
       />
+      <DateTimePicker
+        value={date}
+        onChange={handleDateChange}
+        disablePast={true}
+      />
+      <TextField
+        select
+        label="Категория"
+        value={category}
+        onChange={handleCategoryChange}
+      >
+        {categories.map((item) => (
+          <MenuItem key={item} value={item}>
+            {item}
+          </MenuItem>
+        ))}
+      </TextField>
+
+      <Button variant="contained" onClick={handleAdd}>
+        Добавить задачу
+      </Button>
     </Box>
   );
 };
